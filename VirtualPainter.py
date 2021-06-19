@@ -55,8 +55,9 @@ def virtual_painter_function(painter_flag):
     detector = htm.handDetector(maxHands=2,trackCon = 0.9, detectionCon=0.9)
     xp, yp = 0, 0
     imgCanvas = np.zeros((720,1280, 3), np.uint8)
-
-    while True:
+    counter =0
+    runn= True
+    while runn == True:
         if (painter_flag==True):
             # 1. Import image
             success, img = cap.read()
@@ -114,7 +115,7 @@ def virtual_painter_function(painter_flag):
 
                         elif (275 < y1 < 375):
                             header2 = header2
-
+                            runn =False
 
                         elif 400 < y1 < 500:
                             header2 = overlayList2[0]
@@ -185,6 +186,17 @@ def virtual_painter_function(painter_flag):
                 ### for saving
                 # if all (x == 0 for x in fingers[0:5]):
                 #     imgCanvas = np.zeros((480, 640, 3), np.uint8)
+
+
+                ## for saving
+                if all (x == 0 for x in fingers[0:4]) and fingers[4] == 1:
+                    imgGray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
+                    _, imgInv = cv2.threshold(imgGray, 50, 255, cv2.THRESH_BINARY_INV)
+                    imgInv = cv2.cvtColor(imgInv,cv2.COLOR_GRAY2BGR)
+                    if counter % 30 == 0:#30 fps
+                        #cv2.imwrite('imgCanvas' + str(int(counter/30)) + '.jpg',imgCanvas)
+                        cv2.imwrite('imgInv' + str(int(counter/30)) + '.jpg',imgInv)
+                    counter = counter + 1
 
 
             imgGray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
